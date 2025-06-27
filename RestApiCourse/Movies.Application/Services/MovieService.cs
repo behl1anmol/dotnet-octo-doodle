@@ -15,48 +15,48 @@ public class MovieService : IMovieService
         _movieRepository = movieRepository;
     }
     
-    public async Task<bool> CreateAsync(Movie movie)
+    public async Task<bool> CreateAsync(Movie movie, CancellationToken cancellationToken = default)
     {
         //this type of errors in api must be 400 errors 
         //therefore we will be throwing an exception
         //and handle it on the api layer
-        await _movieValidator.ValidateAndThrowAsync(movie);
-        return await _movieRepository.CreateAsync(movie);
+        await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken);
+        return await _movieRepository.CreateAsync(movie, cancellationToken);
     }
 
-    public Task<bool> DeleteByIdAsync(Guid id)
+    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return _movieRepository.DeleteByIdAsync(id);
+        return _movieRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
-    public Task<IEnumerable<Movie>> GetAllAsync()
+    public Task<IEnumerable<Movie>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return _movieRepository.GetAllAsync();
+        return _movieRepository.GetAllAsync(cancellationToken);
     }
 
-    public Task<Movie?> GetByIdAsync(Guid id)
+    public Task<Movie?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return _movieRepository.GetByIdAsync(id);
+        return _movieRepository.GetByIdAsync(id, cancellationToken);
     }
 
-    public Task<Movie?> GetBySlugAsync(string slug)
+    public Task<Movie?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
     {
-        return _movieRepository.GetBySlugAsync(slug);
+        return _movieRepository.GetBySlugAsync(slug, cancellationToken);
     }
 
-    public async Task<Movie?> UpdateAsync(Movie movie)
+    public async Task<Movie?> UpdateAsync(Movie movie, CancellationToken cancellationToken = default)
     {
         //this type of errors in api must be 400 errors 
         //therefore we will be throwing an exception
         //and handle it on the api layer
-        await _movieValidator.ValidateAndThrowAsync(movie);
-        var movieExists = _movieRepository.ExistsByIdAsync(movie.Id);
+        await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken);
+        var movieExists = _movieRepository.ExistsByIdAsync(movie.Id, cancellationToken);
         if (!await movieExists)
         {
             return null; // Movie does not exist, return null
         }
 
-        await _movieRepository.UpdateAsync(movie);
+        await _movieRepository.UpdateAsync(movie, cancellationToken);
         return movie;
     }
 }
