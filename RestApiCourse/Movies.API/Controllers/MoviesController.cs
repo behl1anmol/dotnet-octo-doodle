@@ -24,7 +24,7 @@ public class MoviesController : ControllerBase
         await _movieRepository.CreateAsync(movie);
 
         //better implementation to return a response
-        return CreatedAtAction(nameof(Get), new { id = movie.Id }, movie);
+        return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
 
         //Before
         //todo: return contracts
@@ -32,9 +32,12 @@ public class MoviesController : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Movies.Get)]
-    public async Task<IActionResult> Get([FromRoute] Guid id)
+    public async Task<IActionResult> Get([FromRoute] string idOrSlug)
     {
-        var movie = await _movieRepository.GetByIdAsync(id);
+        //we are using a slug here but still the actual identifier is Id
+        var movie = Guid.TryParse(idOrSlug, out var id) ?
+                            await _movieRepository.GetByIdAsync(id)
+                            : await _movieRepository.GetBySlugAsync(idOrSlug);
         //Never return a domain object from the API always return a contract
         if (movie is null)
         {
