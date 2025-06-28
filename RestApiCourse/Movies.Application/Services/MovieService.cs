@@ -7,10 +7,12 @@ namespace Movies.Application.Services;
 public class MovieService : IMovieService
 {
     private readonly IMovieRepository _movieRepository;
+    private readonly IRatingRepository _ratingRepository;
     private readonly IValidator<Movie> _movieValidator;
 
-    public MovieService(IMovieRepository movieRepository, IValidator<Movie> movieValidator)
+    public MovieService(IMovieRepository movieRepository, IValidator<Movie> movieValidator, IRatingRepository ratingRepository)
     {
+        _ratingRepository = ratingRepository;
         _movieValidator = movieValidator;
         _movieRepository = movieRepository;
     }
@@ -29,22 +31,22 @@ public class MovieService : IMovieService
         return _movieRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
-    public Task<IEnumerable<Movie>> GetAllAsync(CancellationToken cancellationToken = default)
+    public Task<IEnumerable<Movie>> GetAllAsync(Guid? userid = default, CancellationToken cancellationToken = default)
     {
-        return _movieRepository.GetAllAsync(cancellationToken);
+        return _movieRepository.GetAllAsync(userid, cancellationToken);
     }
 
-    public Task<Movie?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public Task<Movie?> GetByIdAsync(Guid id, Guid? userid = default, CancellationToken cancellationToken = default)
     {
-        return _movieRepository.GetByIdAsync(id, cancellationToken);
+        return _movieRepository.GetByIdAsync(id, userid, cancellationToken);
     }
 
-    public Task<Movie?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
+    public Task<Movie?> GetBySlugAsync(string slug, Guid? userid = default, CancellationToken cancellationToken = default)
     {
-        return _movieRepository.GetBySlugAsync(slug, cancellationToken);
+        return _movieRepository.GetBySlugAsync(slug, userid, cancellationToken);
     }
 
-    public async Task<Movie?> UpdateAsync(Movie movie, CancellationToken cancellationToken = default)
+    public async Task<Movie?> UpdateAsync(Movie movie, Guid? userid = default, CancellationToken cancellationToken = default)
     {
         //this type of errors in api must be 400 errors 
         //therefore we will be throwing an exception
@@ -57,6 +59,16 @@ public class MovieService : IMovieService
         }
 
         await _movieRepository.UpdateAsync(movie, cancellationToken);
+
+        if (!userid.HasValue)
+        {
+            var rating = await _ratingRepository.GetRatingAsync(movie.Id, cancellationToken);
+            movie.Rating = rating;
+            return movie;
+        }
+        var ratings = await _ratingRepository.GetRatingAsync(movie.Id, userid.Value, cancellationToken);
+        movie.Rating = ratings.Rating;
+        movie.UserRating = ratings.UserRating;
         return movie;
     }
 }

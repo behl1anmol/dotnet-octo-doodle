@@ -10,6 +10,8 @@ public partial class Movie
     public required int YearOfRelease { get; set; }
     public required List<string> Genres { get; init; } = new();
     public string Slug => GenerateSlug();
+    public float? Rating{ get; set; }
+    public int? UserRating{ get; set; }
 
     /// <summary>
     /// Generating a slug which can be used to retrive the records.

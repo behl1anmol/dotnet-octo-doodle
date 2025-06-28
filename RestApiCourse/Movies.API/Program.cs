@@ -3,6 +3,7 @@ using Movies.API;
 using Movies.API.Mapping;
 using Movies.Application;
 using Movies.Application.Database;
+using Movies.API.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;

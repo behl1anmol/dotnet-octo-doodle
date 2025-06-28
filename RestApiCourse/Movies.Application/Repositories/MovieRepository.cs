@@ -58,35 +58,49 @@ public class MovieRepository : IMovieRepository
         return result > 0;
     }
 
-    public async Task<IEnumerable<Movie>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Movie>> GetAllAsync(Guid? userid = default, CancellationToken cancellationToken = default)
     {
         using var connection = await _dbconnectionFactory.CreateConnectionAsync(cancellationToken);
 
         var result = await connection.QueryAsync(new CommandDefinition("""
-            select m.*, string_agg(g.name, ', ') as genres
-            from movies m left join genres g on m.id = g.movieId
+            select m.*
+            , string_agg(distinct g.name, ', ') as genres
+            , round(avg(r.rating),1) as rating,
+            , myr.rating as userrating
+            from movies m 
+            left join genres g on m.id = g.movieId
+            left join ratings r on m.id = r.movieid
+            left join ratings myr on m.id = myr.movieid and myr.userid = @userid
             group by id
-            """, cancellationToken: cancellationToken));
+            """, new {userid}, cancellationToken: cancellationToken));
 
         return result.Select(x => new Movie
         {
             Id = x.id,
             Title = x.title,
             YearOfRelease = x.yearofrelease,
+            Rating = (float?)x.rating,
+            UserRating = (int?)x.userrating,
             Genres = Enumerable.ToList(x.genres.Split(','))
         });
     }
 
-    public async Task<Movie?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Movie?> GetByIdAsync(Guid id, Guid? userid = default, CancellationToken cancellationToken = default)
     {
         using var connection = await _dbconnectionFactory.CreateConnectionAsync(cancellationToken);
         
         var movie = await connection.QuerySingleOrDefaultAsync<Movie>
                     (new CommandDefinition("""
-                        select *
-                        from movies
-                        where id = @id;
-                        """, new { id }, cancellationToken: cancellationToken));
+                        select m.*, 
+                        round(avg(r.rating),1) as rating,
+                        myr.rating as userrating
+                        from movies m
+                        left join ratings r on m.id = r.movieid
+                        left join ratings myr on m.id = myr.movieid 
+                        and myr.userid = @userid
+                        where m.id = @id;
+                        group by m.id, myr.rating
+                        """, new { id, userid }, cancellationToken: cancellationToken));
 
         if (movie is null)
         {
@@ -107,16 +121,21 @@ public class MovieRepository : IMovieRepository
         return movie;
     }
 
-    public async Task<Movie?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
+    public async Task<Movie?> GetBySlugAsync(string slug, Guid? userid = default, CancellationToken cancellationToken = default)
     {
         using var connection = await _dbconnectionFactory.CreateConnectionAsync(cancellationToken);
         
         var movie = await connection.QuerySingleOrDefaultAsync<Movie>
-                    (new CommandDefinition("""
-                        select *
-                        from movies
-                        where slug = @slug;
-                        """, new { slug }, cancellationToken: cancellationToken));
+                     (new CommandDefinition("""
+                        select m.*, round(avg(r.rating),1) as rating,
+                        myr.rating as userrating
+                        from movies m
+                        left join ratings r on m.id = r.movieid
+                        left join ratings myr on m.id = myr.movieid 
+                        and myr.userid = @userid
+                        where m.slug = @slug;
+                        group by m.id, myr.rating
+                        """, new { slug, userid }, cancellationToken: cancellationToken));
 
         if (movie is null)
         {

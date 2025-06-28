@@ -1,6 +1,4 @@
-using System;
-
-namespace Movies.API;
+namespace Movies.API.Auth;
 
 public static class AuthConstants
 {
