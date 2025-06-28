@@ -12,9 +12,9 @@ public class DBInitializer
         _dbConnectionFactory = dbConnectionFactory;
     }
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+        using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
 
         await connection.ExecuteAsync("""
             create table if not exists movies (
