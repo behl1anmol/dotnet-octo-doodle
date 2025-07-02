@@ -1,4 +1,3 @@
-using System;
 using Movies.Application.Models;
 using Movies.Contracts.Requests;
 using Movies.Contracts.Responses;
@@ -60,5 +59,22 @@ public static class ContractMapping
             Slug = x.Slug,
             MovieId = x.MovieId
         });
+    }
+    public static GetAllMoviesOptions MapToOptions(this GetAllMoviesRequest request)
+    {
+        return new GetAllMoviesOptions
+        {
+            Title = request.Title,
+            YearOfRelease = request.Year,
+            SortField = request.SortBy?.Trim('+','-'),
+            SortOrder = request.SortBy is null ? SortOrder.Unsorted : 
+                request.SortBy.StartsWith('-') ? SortOrder.Descending : SortOrder.Ascending,
+        };
+    }
+    
+    public static GetAllMoviesOptions WithUserId(this GetAllMoviesOptions options, Guid? userId)
+    {
+        options.UserId = userId;
+        return options;
     }
 }
