@@ -74,4 +74,10 @@ public class MovieService : IMovieService
         movie.UserRating = ratings.UserRating;
         return movie;
     }
+
+    public async Task<int> GetCountAsync(string? title, int? yearOfRelease,
+        CancellationToken cancellationToken = default)
+    {
+        return await _movieRepository.GetCountAsync(title, yearOfRelease, cancellationToken);
+    }
 }
