@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.API.Mapping;
@@ -9,6 +10,7 @@ using Movies.Contracts.Responses;
 namespace Movies.API.Controllers;
 
 [ApiController]
+//[ApiVersion(1.0)] 
 public class MoviesController : ControllerBase
 {
     private readonly IMovieService _movieService;
@@ -33,7 +35,8 @@ public class MoviesController : ControllerBase
         //return Created($"/{ApiEndpoints.Movies.Create}{movie.Id}", movie);
     }
 
-    [Authorize]
+    [Authorize] // can add deprecated tag which will add a deprecation header to the response
+    //[ApiVersion(1.0)] //add query string to the url to specify the version (Eg: api-version=1.0)
     [HttpGet(ApiEndpoints.Movies.Get)]
     public async Task<IActionResult> Get([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken cancellationToken)
     {
@@ -74,7 +77,7 @@ public class MoviesController : ControllerBase
         });
         return Ok(response);
     }
-
+    
     [Authorize]
     //[AllowAnonymous] //for accessing without the token
     [HttpGet(ApiEndpoints.Movies.GetAll)]

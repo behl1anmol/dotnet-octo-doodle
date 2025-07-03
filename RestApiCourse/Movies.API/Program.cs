@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Movies.API;
 using Movies.API.Mapping;
 using Movies.Application;
 using Movies.Application.Database;
@@ -18,7 +17,7 @@ builder.Services.AddAuthentication(x =>
     x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
     {
         ValidateIssuer = true, // who is issuing the token
-        ValidateAudience = true, // who is the token intended for
+        ValidateAudience = true, // who is the token intended for?
         ValidateLifetime = true, //validate the token expiration
         ValidateIssuerSigningKey = true, //for validating the signature
         ValidIssuer = config["Jwt:Issuer"],
@@ -37,6 +36,15 @@ builder.Services.AddAuthorization(x=>
                    context.User.HasClaim(AuthConstants.AdminUserClaimName, "true") ||
                    context.User.HasClaim(AuthConstants.TrustedUserClaimName, "true")));
 });
+
+// builder.Services.AddApiVersioning(x =>
+// {
+//     x.DefaultApiVersion = new ApiVersion(1.0);
+//     x.AssumeDefaultVersionWhenUnspecified = true;
+//     x.ReportApiVersions = true; // add API supported versions to header (api-supported-versions)
+//     //x.ApiVersionReader = new HeaderApiVersionReader("api-version"); // read version from header (api-version)
+//     x.ApiVersionReader = new MediaTypeApiVersionReader("api-version"); // read version from accept header (api-version) eg: Accept: application/json;api-version=2.0
+// }).AddMvc();
 
 builder.Services.AddControllers();
 // Add services to the container.

@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.API.Auth;
@@ -8,6 +9,7 @@ using Movies.Contracts.Requests;
 namespace Movies.API.Controllers;
 
 [ApiController]
+//[ApiVersion(1.0)] 
 public class RatingsController(IRatingService _ratingService) : ControllerBase
 {
     [Authorize]
