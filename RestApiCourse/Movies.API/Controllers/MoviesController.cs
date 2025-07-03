@@ -4,6 +4,7 @@ using Movies.API.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
 using Movies.API.Auth;
+using Movies.Contracts.Responses;
 
 namespace Movies.API.Controllers;
 
@@ -34,7 +35,7 @@ public class MoviesController : ControllerBase
 
     [Authorize]
     [HttpGet(ApiEndpoints.Movies.Get)]
-    public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken cancellationToken)
+    public async Task<IActionResult> Get([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken cancellationToken)
     {
         var userId = HttpContext.GetUserId();
         //we are using a slug here but still the actual identifier is Id
@@ -46,7 +47,31 @@ public class MoviesController : ControllerBase
         {
             return NotFound();
         }
+        
         var response = movie.MapToResponse();
+        
+        //Creating HATEOS links
+        var movieObj = new { id = movie.Id };
+        response.Links.Add(new Link
+        {
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(Get), values: new {idOrSlug = movie.Id}),
+            Rel = "self",
+            Type = "GET"
+        });
+        
+        response.Links.Add(new Link
+        {
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(Update), values: movieObj),
+            Rel = "self",
+            Type = "PUT"
+        });
+        
+        response.Links.Add(new Link
+        {
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(Delete), values: movieObj),
+            Rel = "self",
+            Type = "DELETE"
+        });
         return Ok(response);
     }
 
