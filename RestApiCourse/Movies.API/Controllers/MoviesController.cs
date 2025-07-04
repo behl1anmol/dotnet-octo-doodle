@@ -24,7 +24,8 @@ public class MoviesController : ControllerBase
         _movieService = movieService;
     }
 
-    [Authorize(AuthConstants.TrustedorAdminUserPolicyName)]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))] //this will use the ApiKeyAuthFilter to validate the API key
+    //[Authorize(AuthConstants.TrustedorAdminUserPolicyName)]
     [HttpPost(ApiEndpoints.Movies.Create)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]

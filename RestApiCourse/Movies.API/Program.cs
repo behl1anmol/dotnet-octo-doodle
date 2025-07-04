@@ -34,6 +34,9 @@ builder.Services.AddAuthorization(x=>
 {
     x.AddPolicy(AuthConstants.AdminUserPolicyName
                 , policy => policy.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
+
+    // x.AddPolicy(AuthConstants.AdminUserPolicyName
+    //             , policy => policy.AddRequirements(new AdminAuthRequirement(config["ApiKey"]!)));
     x.AddPolicy(AuthConstants.TrustedUserPolicyName
                , policy => policy.RequireClaim(AuthConstants.TrustedUserClaimName, "true"));
     x.AddPolicy(AuthConstants.TrustedorAdminUserPolicyName
@@ -41,6 +44,8 @@ builder.Services.AddAuthorization(x=>
                    context.User.HasClaim(AuthConstants.AdminUserClaimName, "true") ||
                    context.User.HasClaim(AuthConstants.TrustedUserClaimName, "true")));
 });
+
+builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 builder.Services.AddApiVersioning(x =>
 {
