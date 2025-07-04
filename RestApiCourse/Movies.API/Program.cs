@@ -7,6 +7,7 @@ using Asp.Versioning;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Movies.Api.Swagger;
+using Movies.API.Health;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -49,7 +50,10 @@ builder.Services.AddApiVersioning(x =>
     //x.ApiVersionReader = new HeaderApiVersionReader("api-version"); // read version from header (api-version)
     x.ApiVersionReader = new MediaTypeApiVersionReader("api-version"); // read version from accept header (api-version) eg: Accept: application/json;api-version=2.0
 }).AddMvc().AddApiExplorer();
+
 builder.Services.AddControllers();
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
 
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 // Add services to the container.
@@ -76,6 +80,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.MapHealthChecks("_health");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
