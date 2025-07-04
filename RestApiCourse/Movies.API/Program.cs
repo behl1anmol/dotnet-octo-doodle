@@ -3,6 +3,10 @@ using Movies.API.Mapping;
 using Movies.Application;
 using Movies.Application.Database;
 using Movies.API.Auth;
+using Asp.Versioning;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Movies.Api.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -37,20 +41,21 @@ builder.Services.AddAuthorization(x=>
                    context.User.HasClaim(AuthConstants.TrustedUserClaimName, "true")));
 });
 
-// builder.Services.AddApiVersioning(x =>
-// {
-//     x.DefaultApiVersion = new ApiVersion(1.0);
-//     x.AssumeDefaultVersionWhenUnspecified = true;
-//     x.ReportApiVersions = true; // add API supported versions to header (api-supported-versions)
-//     //x.ApiVersionReader = new HeaderApiVersionReader("api-version"); // read version from header (api-version)
-//     x.ApiVersionReader = new MediaTypeApiVersionReader("api-version"); // read version from accept header (api-version) eg: Accept: application/json;api-version=2.0
-// }).AddMvc();
-
+builder.Services.AddApiVersioning(x =>
+{
+    x.DefaultApiVersion = new ApiVersion(1.0);
+    x.AssumeDefaultVersionWhenUnspecified = true;
+    x.ReportApiVersions = true; // add API supported versions to header (api-supported-versions)
+    //x.ApiVersionReader = new HeaderApiVersionReader("api-version"); // read version from header (api-version)
+    x.ApiVersionReader = new MediaTypeApiVersionReader("api-version"); // read version from accept header (api-version) eg: Accept: application/json;api-version=2.0
+}).AddMvc().AddApiExplorer();
 builder.Services.AddControllers();
+
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(x=>x.OperationFilter<SwaggerDefaultValues>());
 
 builder.Services.AddApplication();
 builder.Services.AddDatabase(config["Database:ConnectionString"]!);
@@ -62,7 +67,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(x=>
+    {
+        foreach (var description in app.DescribeApiVersions())
+        {
+            x.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",description.GroupName);
+        }
+    });
 }
 
 app.UseHttpsRedirection();

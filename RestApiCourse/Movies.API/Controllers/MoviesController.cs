@@ -10,7 +10,8 @@ using Movies.Contracts.Responses;
 namespace Movies.API.Controllers;
 
 [ApiController]
-//[ApiVersion(1.0)] 
+[ApiVersion(1.0)] 
+[ApiVersion(2.0)] 
 public class MoviesController : ControllerBase
 {
     private readonly IMovieService _movieService;
@@ -28,7 +29,7 @@ public class MoviesController : ControllerBase
         await _movieService.CreateAsync(movie, cancellationToken);
 
         //better implementation to return a response
-        return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
+        return CreatedAtAction(nameof(GetV1), new { idOrSlug = movie.Id }, movie);
 
         //Before
         //todo: return contracts
@@ -37,8 +38,9 @@ public class MoviesController : ControllerBase
 
     [Authorize] // can add deprecated tag which will add a deprecation header to the response
     //[ApiVersion(1.0)] //add query string to the url to specify the version (Eg: api-version=1.0)
+    [MapToApiVersion(1.0)] //this will map the action to the version 2.0
     [HttpGet(ApiEndpoints.Movies.Get)]
-    public async Task<IActionResult> Get([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken cancellationToken)
     {
         var userId = HttpContext.GetUserId();
         //we are using a slug here but still the actual identifier is Id
@@ -57,7 +59,51 @@ public class MoviesController : ControllerBase
         var movieObj = new { id = movie.Id };
         response.Links.Add(new Link
         {
-            Href = linkGenerator.GetPathByAction(HttpContext, nameof(Get), values: new {idOrSlug = movie.Id}),
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(GetV1), values: new {idOrSlug = movie.Id}),
+            Rel = "self",
+            Type = "GET"
+        });
+        
+        response.Links.Add(new Link
+        {
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(Update), values: movieObj),
+            Rel = "self",
+            Type = "PUT"
+        });
+        
+        response.Links.Add(new Link
+        {
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(Delete), values: movieObj),
+            Rel = "self",
+            Type = "DELETE"
+        });
+        return Ok(response);
+    }
+
+    [Authorize] // can add deprecated tag which will add a deprecation header to the response
+    //[ApiVersion(1.0)] //add query string to the url to specify the version (Eg: api-version=1.0)
+    [MapToApiVersion(2.0)] //this will map the action to the version 2.0
+    [HttpGet(ApiEndpoints.Movies.Get)]
+    public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken cancellationToken)
+    {
+        var userId = HttpContext.GetUserId();
+        //we are using a slug here but still the actual identifier is Id
+        var movie = Guid.TryParse(idOrSlug, out var id) ?
+                            await _movieService.GetByIdAsync(id, userId, cancellationToken)
+                            : await _movieService.GetBySlugAsync(idOrSlug, userId, cancellationToken);
+        //Never return a domain object from the API always return a contract
+        if (movie is null)
+        {
+            return NotFound();
+        }
+        
+        var response = movie.MapToResponse();
+        
+        //Creating HATEOS links
+        var movieObj = new { id = movie.Id };
+        response.Links.Add(new Link
+        {
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(GetV2), values: new {idOrSlug = movie.Id}),
             Rel = "self",
             Type = "GET"
         });
