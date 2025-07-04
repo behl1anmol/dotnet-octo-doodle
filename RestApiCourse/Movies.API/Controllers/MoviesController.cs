@@ -42,6 +42,8 @@ public class MoviesController : ControllerBase
     //[ApiVersion(1.0)] //add query string to the url to specify the version (Eg: api-version=1.0)
     [MapToApiVersion(1.0)] //this will map the action to the version 2.0
     [HttpGet(ApiEndpoints.Movies.Get)]
+    //for response caching we can use the ResponseCache attribute
+    //[ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)] //caching the response for 30 seconds
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken cancellationToken)
@@ -88,6 +90,7 @@ public class MoviesController : ControllerBase
     //[ApiVersion(1.0)] //add query string to the url to specify the version (Eg: api-version=1.0)
     [MapToApiVersion(2.0)] //this will map the action to the version 2.0
     [HttpGet(ApiEndpoints.Movies.Get)]
+    //[ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)] //caching the response for 30 seconds
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken cancellationToken)
@@ -133,6 +136,9 @@ public class MoviesController : ControllerBase
     [Authorize]
     //[AllowAnonymous] //for accessing without the token
     [HttpGet(ApiEndpoints.Movies.GetAll)]
+    // for response caching we can use the ResponseCache attribute
+    // this will cache the response for 30 seconds and vary by query parameters
+    //[ResponseCache(Duration = 30, VaryByQueryKeys = new[] { "title", "year", "sortBy", "pageSize", "page" }, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)] //caching the response for 30 seconds
     [ProducesResponseType(typeof(MoviesResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request, CancellationToken cancellationToken)
     {

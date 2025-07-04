@@ -52,6 +52,8 @@ builder.Services.AddApiVersioning(x =>
 }).AddMvc().AddApiExplorer();
 
 builder.Services.AddControllers();
+
+//builder.Services.AddResponseCaching();
 builder.Services.AddHealthChecks()
     .AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
 
@@ -84,6 +86,11 @@ app.MapHealthChecks("_health");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
+//app.UseCors(); This should be used before response caching
+//because response caching uses the request path to cache responses
+//app.UseResponseCaching();
+
 app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();
 
