@@ -23,6 +23,8 @@ public class MoviesController : ControllerBase
 
     [Authorize(AuthConstants.TrustedorAdminUserPolicyName)]
     [HttpPost(ApiEndpoints.Movies.Create)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateMovieRequest request, CancellationToken cancellationToken)
     {
         var movie = request.MapToMovie();
@@ -40,6 +42,8 @@ public class MoviesController : ControllerBase
     //[ApiVersion(1.0)] //add query string to the url to specify the version (Eg: api-version=1.0)
     [MapToApiVersion(1.0)] //this will map the action to the version 2.0
     [HttpGet(ApiEndpoints.Movies.Get)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken cancellationToken)
     {
         var userId = HttpContext.GetUserId();
@@ -52,25 +56,25 @@ public class MoviesController : ControllerBase
         {
             return NotFound();
         }
-        
+
         var response = movie.MapToResponse();
-        
+
         //Creating HATEOS links
         var movieObj = new { id = movie.Id };
         response.Links.Add(new Link
         {
-            Href = linkGenerator.GetPathByAction(HttpContext, nameof(GetV1), values: new {idOrSlug = movie.Id}),
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(GetV1), values: new { idOrSlug = movie.Id }),
             Rel = "self",
             Type = "GET"
         });
-        
+
         response.Links.Add(new Link
         {
             Href = linkGenerator.GetPathByAction(HttpContext, nameof(Update), values: movieObj),
             Rel = "self",
             Type = "PUT"
         });
-        
+
         response.Links.Add(new Link
         {
             Href = linkGenerator.GetPathByAction(HttpContext, nameof(Delete), values: movieObj),
@@ -84,6 +88,8 @@ public class MoviesController : ControllerBase
     //[ApiVersion(1.0)] //add query string to the url to specify the version (Eg: api-version=1.0)
     [MapToApiVersion(2.0)] //this will map the action to the version 2.0
     [HttpGet(ApiEndpoints.Movies.Get)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, [FromServices] LinkGenerator linkGenerator, CancellationToken cancellationToken)
     {
         var userId = HttpContext.GetUserId();
@@ -96,25 +102,25 @@ public class MoviesController : ControllerBase
         {
             return NotFound();
         }
-        
+
         var response = movie.MapToResponse();
-        
+
         //Creating HATEOS links
         var movieObj = new { id = movie.Id };
         response.Links.Add(new Link
         {
-            Href = linkGenerator.GetPathByAction(HttpContext, nameof(GetV2), values: new {idOrSlug = movie.Id}),
+            Href = linkGenerator.GetPathByAction(HttpContext, nameof(GetV2), values: new { idOrSlug = movie.Id }),
             Rel = "self",
             Type = "GET"
         });
-        
+
         response.Links.Add(new Link
         {
             Href = linkGenerator.GetPathByAction(HttpContext, nameof(Update), values: movieObj),
             Rel = "self",
             Type = "PUT"
         });
-        
+
         response.Links.Add(new Link
         {
             Href = linkGenerator.GetPathByAction(HttpContext, nameof(Delete), values: movieObj),
@@ -123,22 +129,26 @@ public class MoviesController : ControllerBase
         });
         return Ok(response);
     }
-    
+
     [Authorize]
     //[AllowAnonymous] //for accessing without the token
     [HttpGet(ApiEndpoints.Movies.GetAll)]
+    [ProducesResponseType(typeof(MoviesResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request, CancellationToken cancellationToken)
-    { 
+    {
         var userId = HttpContext.GetUserId();
         var options = request.MapToOptions().WithUserId(userId);
-        var movies = await _movieService.GetAllAsync(options, cancellationToken); 
+        var movies = await _movieService.GetAllAsync(options, cancellationToken);
         var movieCount = await _movieService.GetCountAsync(options.Title, options.YearOfRelease, cancellationToken);
-        var moviesResponse = movies.MapToResponse(request.Page, request.PageSize, movieCount); 
+        var moviesResponse = movies.MapToResponse(request.Page, request.PageSize, movieCount);
         return Ok(moviesResponse);
     }
 
     [Authorize(AuthConstants.TrustedorAdminUserPolicyName)]
     [HttpPut(ApiEndpoints.Movies.Update)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromRoute] Guid id,
     [FromBody] UpdateMovieRequest request, CancellationToken cancellationToken)
     {
@@ -155,6 +165,8 @@ public class MoviesController : ControllerBase
 
     [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpDelete(ApiEndpoints.Movies.Delete)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var deleted = await _movieService.DeleteByIdAsync(id, cancellationToken);
