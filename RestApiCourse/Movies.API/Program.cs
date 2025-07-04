@@ -54,6 +54,17 @@ builder.Services.AddApiVersioning(x =>
 builder.Services.AddControllers();
 
 //builder.Services.AddResponseCaching();
+builder.Services.AddOutputCache(x=>
+{
+    x.AddBasePolicy(c => c.Cache());
+    x.AddPolicy("MovieCache", c=>
+    {
+        c.Cache()
+            .Expire(TimeSpan.FromMinutes(1))
+            .SetVaryByQuery(new[] { "title", "year", "sortBy", "pageSize", "page" })
+            .Tag("movies"); //imp: tagging allows to invalidate the cache for specific tags
+    });
+});
 builder.Services.AddHealthChecks()
     .AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
 
@@ -90,6 +101,7 @@ app.UseAuthorization();
 //app.UseCors(); This should be used before response caching
 //because response caching uses the request path to cache responses
 //app.UseResponseCaching();
+app.UseOutputCache();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();

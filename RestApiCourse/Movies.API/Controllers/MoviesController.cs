@@ -6,6 +6,7 @@ using Movies.Application.Services;
 using Movies.Contracts.Requests;
 using Movies.API.Auth;
 using Movies.Contracts.Responses;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace Movies.API.Controllers;
 
@@ -15,9 +16,11 @@ namespace Movies.API.Controllers;
 public class MoviesController : ControllerBase
 {
     private readonly IMovieService _movieService;
+    private readonly IOutputCacheStore _outputCacheStore;
 
-    public MoviesController(IMovieService movieService)
+    public MoviesController(IMovieService movieService, IOutputCacheStore outputCacheStore)
     {
+        _outputCacheStore = outputCacheStore;
         _movieService = movieService;
     }
 
@@ -29,10 +32,10 @@ public class MoviesController : ControllerBase
     {
         var movie = request.MapToMovie();
         await _movieService.CreateAsync(movie, cancellationToken);
+        await _outputCacheStore.EvictByTagAsync("movies", cancellationToken); //removing the cache for movies tag
 
         //better implementation to return a response
         return CreatedAtAction(nameof(GetV1), new { idOrSlug = movie.Id }, movie);
-
         //Before
         //todo: return contracts
         //return Created($"/{ApiEndpoints.Movies.Create}{movie.Id}", movie);
@@ -42,6 +45,7 @@ public class MoviesController : ControllerBase
     //[ApiVersion(1.0)] //add query string to the url to specify the version (Eg: api-version=1.0)
     [MapToApiVersion(1.0)] //this will map the action to the version 2.0
     [HttpGet(ApiEndpoints.Movies.Get)]
+    [OutputCache]
     //for response caching we can use the ResponseCache attribute
     //[ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)] //caching the response for 30 seconds
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
@@ -90,6 +94,7 @@ public class MoviesController : ControllerBase
     //[ApiVersion(1.0)] //add query string to the url to specify the version (Eg: api-version=1.0)
     [MapToApiVersion(2.0)] //this will map the action to the version 2.0
     [HttpGet(ApiEndpoints.Movies.Get)]
+    [OutputCache]
     //[ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)] //caching the response for 30 seconds
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -136,6 +141,7 @@ public class MoviesController : ControllerBase
     [Authorize]
     //[AllowAnonymous] //for accessing without the token
     [HttpGet(ApiEndpoints.Movies.GetAll)]
+    [OutputCache(PolicyName = "MovieCache")] //this will use the output cache policy defined in the AddOutputCache method
     // for response caching we can use the ResponseCache attribute
     // this will cache the response for 30 seconds and vary by query parameters
     //[ResponseCache(Duration = 30, VaryByQueryKeys = new[] { "title", "year", "sortBy", "pageSize", "page" }, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)] //caching the response for 30 seconds
@@ -166,6 +172,7 @@ public class MoviesController : ControllerBase
             return NotFound();
         }
         var response = updatedMovie.MapToResponse();
+        await _outputCacheStore.EvictByTagAsync("movies", cancellationToken); //removing the cache for movies tag
         return Ok(response);
     }
 
@@ -180,6 +187,9 @@ public class MoviesController : ControllerBase
         {
             return NotFound();
         }
+
+        await _outputCacheStore.EvictByTagAsync("movies", cancellationToken); //removing the cache for movies tag
+
         return Ok();
     }
 
