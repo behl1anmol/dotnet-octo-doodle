@@ -2,15 +2,17 @@ namespace Movies.Contracts.Requests;
 
 public class PagedRequest
 {
-    public required int Page
+    public const int DefaultPageSize = 10;
+    public const int DefaultPage = 1;
+    public int? Page
     {
         get;
         init;
-    } = 1;
+    } = DefaultPage;
 
-    public required int PageSize
+    public int? PageSize
     {
         get;
         init;
-    } = 10;
+    } = DefaultPageSize;
 }

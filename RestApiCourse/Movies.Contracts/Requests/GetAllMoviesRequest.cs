@@ -2,19 +2,19 @@ namespace Movies.Contracts.Requests;
 
 public class GetAllMoviesRequest : PagedRequest
 {
-    public required string? Title
+    public string? Title
     {
         get;
         init;
     }
 
-    public required int? Year
+    public int? Year
     {
         get;
         init;   
     }
     
-    public required string? SortBy
+    public string? SortBy
     {
         get;
         init;   

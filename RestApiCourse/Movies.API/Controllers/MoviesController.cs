@@ -153,7 +153,7 @@ public class MoviesController : ControllerBase
         var options = request.MapToOptions().WithUserId(userId);
         var movies = await _movieService.GetAllAsync(options, cancellationToken);
         var movieCount = await _movieService.GetCountAsync(options.Title, options.YearOfRelease, cancellationToken);
-        var moviesResponse = movies.MapToResponse(request.Page, request.PageSize, movieCount);
+        var moviesResponse = movies.MapToResponse(request.Page.GetValueOrDefault(PagedRequest.DefaultPage), request.PageSize.GetValueOrDefault(PagedRequest.DefaultPageSize), movieCount);
         return Ok(moviesResponse);
     }
 
