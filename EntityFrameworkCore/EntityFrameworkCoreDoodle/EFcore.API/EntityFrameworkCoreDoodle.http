@@ -1,0 +1,6 @@
+@EntityFrameworkCoreDoodle_HostAddress = http://localhost:5148
+
+GET {{EntityFrameworkCoreDoodle_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
