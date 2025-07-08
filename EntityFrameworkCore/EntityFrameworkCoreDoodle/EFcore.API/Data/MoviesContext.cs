@@ -6,6 +6,7 @@ namespace EFcore.API.Data;
 
 public class MoviesContext : DbContext
 {
+    public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<Movie> Movies => Set<Movie>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
