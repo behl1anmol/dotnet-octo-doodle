@@ -28,7 +28,7 @@ public class MoviesController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromRoute] int id)
     {
-        var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
+        var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Identifier == id);
         if (movie == null)
         {
             return NotFound();
@@ -46,7 +46,7 @@ public class MoviesController : Controller
         await _context.SaveChangesAsync();
         //movie has an ID
         
-        return CreatedAtAction(nameof(Get), new {id = movie.Id}, movie);       
+        return CreatedAtAction(nameof(Get), new {id = movie.Identifier}, movie);       
     }
     
     [HttpPut("{id:int}")]
@@ -98,13 +98,13 @@ public class MoviesController : Controller
         //lambda syntax
         var filteredTitles = await _context.Movies
                                             .Where(m => m.ReleaseDate.Year == year)
-                                            .Select(m => new MovieTitle {Id = m.Id, Title = m.Title})
+                                            .Select(m => new MovieTitle {Id = m.Identifier, Title = m.Title})
                                             .ToListAsync();
 
         //query syntax
         var filteredTitlesQuery = from movie in _context.Movies
             where movie.ReleaseDate.Year == year
-            select new MovieTitle {Id = movie.Id, Title = movie.Title};
+            select new MovieTitle {Id = movie.Identifier, Title = movie.Title};
 
         return Ok(filteredTitles);       
     } 
