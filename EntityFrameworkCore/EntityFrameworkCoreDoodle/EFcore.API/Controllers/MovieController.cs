@@ -28,7 +28,9 @@ public class MoviesController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromRoute] int id)
     {
-        var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Identifier == id);
+        var movie = await _context.Movies
+            .Include(m => m.Genre)
+            .SingleOrDefaultAsync(m => m.Identifier == id);
         if (movie == null)
         {
             return NotFound();
@@ -105,6 +107,19 @@ public class MoviesController : Controller
         var filteredTitlesQuery = from movie in _context.Movies
             where movie.ReleaseDate.Year == year
             select new MovieTitle {Id = movie.Identifier, Title = movie.Title};
+
+        return Ok(filteredTitles);       
+    } 
+    
+    [HttpGet("until-age{ageRating}")]
+    [ProducesResponseType(typeof(List<MovieTitle>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllUntilAge([FromRoute] AgeRating ageRating)
+    {
+        //lambda syntax
+        var filteredTitles = await _context.Movies
+            .Where(m => m.AgeRating <= ageRating)
+            .Select(m => new MovieTitle {Id = m.Identifier, Title = m.Title})
+            .ToListAsync();
 
         return Ok(filteredTitles);       
     } 
