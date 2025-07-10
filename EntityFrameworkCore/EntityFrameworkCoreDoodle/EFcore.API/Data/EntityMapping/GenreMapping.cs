@@ -9,7 +9,7 @@ public class GenreMapping : IEntityTypeConfiguration<Genre>
 {
     public void Configure(EntityTypeBuilder<Genre> builder)
     {
-        builder.HasData(new Genre { Id = 1, Name = "Action" });
+        //builder.HasData(new Genre { Id = 1, Name = "Action" });
         
         builder.Property<DateTime>("CreatedDate")
             .HasColumnName("CreatedAt")
