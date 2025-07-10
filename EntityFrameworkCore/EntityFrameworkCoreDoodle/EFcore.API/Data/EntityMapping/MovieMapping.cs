@@ -10,7 +10,8 @@ public class MovieMapping : IEntityTypeConfiguration<EFcore.API.Models.Movie>
 {
     public void Configure(EntityTypeBuilder<Movie> builder)
     {
-        builder.ToTable("Movies");
+        builder.ToTable("Movies")
+            .HasQueryFilter(m=>m.ReleaseDate >= DateTime.Now.AddYears(-20));
 
         builder.HasKey(m => m.Identifier);
 
