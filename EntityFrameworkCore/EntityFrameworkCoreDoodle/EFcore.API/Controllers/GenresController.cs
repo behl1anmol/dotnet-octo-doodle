@@ -29,10 +29,16 @@ public class GenresController : Controller
     public async Task<IActionResult> Get([FromRoute] int id)
     {
         var genre = await _context.Genres.FindAsync(id);
-        
-        return genre == null
-            ? NotFound()
-            : Ok(genre);
+
+        if(genre == null)
+            return NotFound();
+#if DEBUG
+        //accessing and logging shadow property
+        var createdDate = _context.Entry<Genre>(genre!).Property<DateTime>("CreatedDate").CurrentValue;
+        //log the created date
+        Console.WriteLine($"Genre created date: {createdDate}");
+#endif      
+        return Ok(genre);
     }
     
     [HttpPost]
