@@ -28,6 +28,8 @@ public static class CreateMovieEndpoints
             .WithName(Name)
             .Produces<CreateMovieRequest>(StatusCodes.Status201Created)
             .Produces<ValidationFailureResponse>(StatusCodes.Status400BadRequest)
+            .WithApiVersionSet(ApiVersioning.VersionSet)
+            .HasApiVersion(1.0)
             .RequireAuthorization(AuthConstants.TrustedorAdminUserPolicyName);
         return app;
     }

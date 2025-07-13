@@ -29,6 +29,8 @@ public static class DeleteMovieEndpoint
         .WithName(Name)
         .Produces<MovieResponse>(StatusCodes.Status200OK)
         .Produces<ValidationFailureResponse>(StatusCodes.Status400BadRequest)
+        .WithApiVersionSet(ApiVersioning.VersionSet)
+        .HasApiVersion(1.0)
         .RequireAuthorization(AuthConstants.AdminUserPolicyName);;
         return app;
     }

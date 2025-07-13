@@ -33,6 +33,8 @@ public static class GetMovieEndpoint
         .Produces<MovieResponse>(StatusCodes.Status200OK)
         .Produces<ValidationFailureResponse>(StatusCodes.Status400BadRequest)
         .CacheOutput("MovieCache")
+        .WithApiVersionSet(ApiVersioning.VersionSet)
+        .HasApiVersion(1.0)
         .RequireAuthorization();
         return app;
     }

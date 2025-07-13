@@ -55,7 +55,11 @@ builder.Services.AddApiVersioning(x =>
     x.ReportApiVersions = true; // add API supported versions to header (api-supported-versions)
     //x.ApiVersionReader = new HeaderApiVersionReader("api-version"); // read version from header (api-version)
     x.ApiVersionReader = new MediaTypeApiVersionReader("api-version"); // read version from accept header (api-version) eg: Accept: application/json;api-version=2.0
-}).AddApiExplorer();
+}).AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'V";
+    options.SubstituteApiVersionInUrl = true;
+});
 
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddControllers();
@@ -75,7 +79,7 @@ builder.Services.AddOutputCache(x=>
 builder.Services.AddHealthChecks()
     .AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
 
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+//builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 //builder.Services.AddEndpointsApiExplorer();
@@ -84,12 +88,15 @@ builder.Services.AddSwaggerGen(x=>x.OperationFilter<SwaggerDefaultValues>());
 builder.Services.AddApplication();
 builder.Services.AddDatabase(config["Database:ConnectionString"]!);
 
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 var app = builder.Build();
 
 //for versioning in minimal API
 app.CreateApiVersionSet();
 
+//for minimal API
+app.MapApiEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -116,9 +123,6 @@ app.UseOutputCache();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 //app.MapControllers();
-
-//for minimal API
-app.MapApiEndpoints();
 
 var dbInitializer = app.Services.GetRequiredService<DBInitializer>();
 await dbInitializer.InitializeAsync(app.Lifetime.ApplicationStopping);

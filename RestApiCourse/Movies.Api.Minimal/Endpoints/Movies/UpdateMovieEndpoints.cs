@@ -34,6 +34,8 @@ public static class UpdateMovieEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .Produces<ValidationFailureResponse>(StatusCodes.Status400BadRequest)
             .Produces<MovieResponse>(StatusCodes.Status200OK)
+            .WithApiVersionSet(ApiVersioning.VersionSet)
+            .HasApiVersion(1.0)
             .RequireAuthorization(AuthConstants.TrustedorAdminUserPolicyName);;
         return app;
     }
