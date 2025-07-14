@@ -1,2 +1,11 @@
 dotnet tool install -g dotnet-ef
 dotnet-ef migrations add InitialSchema
+--creating db with migrations
+--method 1
+dotnet-ef migrations update
+--method 2
+dotnet-ef migrations script > script.txt
+--method2 3
+--creatig an executable which is recommended
+dotnet-ef migrations bundle 
+./efbundle --help

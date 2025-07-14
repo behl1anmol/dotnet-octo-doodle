@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseScripts", "Database
 		DatabaseScript.sql = DatabaseScript.sql
 		databaseDockerCommand.sh = databaseDockerCommand.sh
 		MigrationsScript.txt = MigrationsScript.txt
+		EFcore.API\script.txt = EFcore.API\script.txt
+		EFcore.API\efbundle = EFcore.API\efbundle
 	EndProjectSection
 EndProject
 Global

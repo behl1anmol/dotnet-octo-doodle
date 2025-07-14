@@ -1,0 +1,88 @@
+Build started...
+Build succeeded.
+dbug: 14/07/2025 23:02:30.376 CoreEventId.ShadowPropertyCreated[10600] (Microsoft.EntityFrameworkCore.Model.Validation) 
+      The property 'Movie.Actors#Person.MovieIdentifier' was created in shadow state because there are no eligible CLR members with a matching name.
+dbug: 14/07/2025 23:02:30.380 CoreEventId.ShadowPropertyCreated[10600] (Microsoft.EntityFrameworkCore.Model.Validation) 
+      The property 'Movie.Actors#Person.Id' was created in shadow state because there are no eligible CLR members with a matching name.
+dbug: 14/07/2025 23:02:30.380 CoreEventId.ShadowPropertyCreated[10600] (Microsoft.EntityFrameworkCore.Model.Validation) 
+      The property 'Movie.Director#Person.MovieIdentifier' was created in shadow state because there are no eligible CLR members with a matching name.
+dbug: 14/07/2025 23:02:30.476 CoreEventId.ContextInitialized[10403] (Microsoft.EntityFrameworkCore.Infrastructure) 
+      Entity Framework Core 9.0.7 initialized 'MoviesContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer:9.0.6' with options: EngineType=SqlServer 
+dbug: 14/07/2025 23:02:30.628 RelationalEventId.MigrationGeneratingUpScript[20404] (Microsoft.EntityFrameworkCore.Migrations) 
+      Generating up script for migration '20250710065440_InitialSchema'.
+dbug: 14/07/2025 23:02:30.677 RelationalEventId.MigrationGeneratingUpScript[20404] (Microsoft.EntityFrameworkCore.Migrations) 
+      Generating up script for migration '20250710065808_Migration2'.
+dbug: 14/07/2025 23:02:30.681 RelationalEventId.MigrationGeneratingUpScript[20404] (Microsoft.EntityFrameworkCore.Migrations) 
+      Generating up script for migration '20250713180344_addImdbRating'.
+dbug: 14/07/2025 23:02:30.690 RelationalEventId.MigrationGeneratingUpScript[20404] (Microsoft.EntityFrameworkCore.Migrations) 
+      Generating up script for migration '20250713180540_updateImdbRating'.
+dbug: 14/07/2025 23:02:30.698 CoreEventId.ContextDisposed[10407] (Microsoft.EntityFrameworkCore.Infrastructure) 
+      'MoviesContext' disposed.
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+GO
+
+BEGIN TRANSACTION;
+CREATE TABLE [Genres] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [CreatedAt] datetime2 NOT NULL DEFAULT (getdate()),
+    CONSTRAINT [PK_Genres] PRIMARY KEY ([Id])
+);
+
+CREATE TABLE [Movies] (
+    [Identifier] int NOT NULL IDENTITY,
+    [Title] varchar(128) NOT NULL,
+    [ReleaseDate] char(8) NOT NULL,
+    [Plot] varchar(max) NULL,
+    [AgeRating] int NOT NULL,
+    [MainGenreId] int NOT NULL,
+    CONSTRAINT [PK_Movies] PRIMARY KEY ([Identifier]),
+    CONSTRAINT [FK_Movies_Genres_MainGenreId] FOREIGN KEY ([MainGenreId]) REFERENCES [Genres] ([Id]) ON DELETE CASCADE
+);
+
+CREATE TABLE [Movie_Actors] (
+    [MovieIdentifier] int NOT NULL,
+    [Id] int NOT NULL IDENTITY,
+    [FirstName] nvarchar(max) NULL,
+    [LastName] nvarchar(max) NULL,
+    CONSTRAINT [PK_Movie_Actors] PRIMARY KEY ([MovieIdentifier], [Id]),
+    CONSTRAINT [FK_Movie_Actors_Movies_MovieIdentifier] FOREIGN KEY ([MovieIdentifier]) REFERENCES [Movies] ([Identifier]) ON DELETE CASCADE
+);
+
+CREATE TABLE [Movie_Director] (
+    [MovieIdentifier] int NOT NULL,
+    [FirstName] nvarchar(max) NULL,
+    [LastName] nvarchar(max) NULL,
+    CONSTRAINT [PK_Movie_Director] PRIMARY KEY ([MovieIdentifier]),
+    CONSTRAINT [FK_Movie_Director_Movies_MovieIdentifier] FOREIGN KEY ([MovieIdentifier]) REFERENCES [Movies] ([Identifier]) ON DELETE CASCADE
+);
+
+CREATE INDEX [IX_Movies_MainGenreId] ON [Movies] ([MainGenreId]);
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20250710065440_InitialSchema', N'9.0.7');
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20250710065808_Migration2', N'9.0.7');
+
+ALTER TABLE [Movies] ADD [ImbdRating] int NOT NULL DEFAULT 0;
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20250713180344_addImdbRating', N'9.0.7');
+
+EXEC sp_rename N'[Movies].[ImbdRating]', N'ImdbRating', 'COLUMN';
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20250713180540_updateImdbRating', N'9.0.7');
+
+COMMIT;
+GO
+
+
