@@ -1,0 +1,2 @@
+dotnet tool install -g dotnet-counters
+dotnet counters monitor Microsoft.EnityFrameworkCore -p 34716 (-p is processID)

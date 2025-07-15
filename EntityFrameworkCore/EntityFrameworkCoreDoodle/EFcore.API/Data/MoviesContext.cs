@@ -9,14 +9,8 @@ public class MoviesContext : DbContext
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<Movie> Movies => Set<Movie>();
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(
-            "Data Source=localhost;Initial Catalog=MoviesDB;User Id=sa;Password=MySaPassword123;TrustServerCertificate=True;");
-        //not proper logging
-        optionsBuilder.LogTo(Console.WriteLine);
-        base.OnConfiguring(optionsBuilder);
-    }
+    public MoviesContext(DbContextOptions<MoviesContext> options) : base(options)
+    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

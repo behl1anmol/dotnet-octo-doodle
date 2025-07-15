@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseScripts", "Database
 		MigrationsScript.txt = MigrationsScript.txt
 		EFcore.API\script.txt = EFcore.API\script.txt
 		EFcore.API\efbundle = EFcore.API\efbundle
+		DotnetCountersPerformanceMonitoring.txt = DotnetCountersPerformanceMonitoring.txt
 	EndProjectSection
 EndProject
 Global
