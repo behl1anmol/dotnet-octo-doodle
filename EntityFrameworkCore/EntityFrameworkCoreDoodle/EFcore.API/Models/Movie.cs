@@ -28,7 +28,11 @@ public class Movie
         set;
     }
     
-    public int MainGenreId { get; set; }
+    public required string MainGenreName { get; set; }
+    
+    public ExternalInformation? ExternalInformation { get; set; }
+    
+    public List<Actor> ActorsList { get; set; } = new();
 }
 
 public enum AgeRating

@@ -28,19 +28,23 @@ public class MovieMapping : IEntityTypeConfiguration<EFcore.API.Models.Movie>
             .HasColumnType("varchar(max)")
             .HasColumnName("Plot");
         
+        builder.Property(movie => movie.MainGenreName)
+            .HasMaxLength(256)
+            .HasColumnType("varchar");
+        
         //one-to-many relationship
         builder
             .HasOne(m => m.Genre)
             .WithMany(g => g.Movies)
-            .HasPrincipalKey(g => g.Id) //define the unique identifier in the entity to be the foreign key
-            .HasForeignKey(m => m.MainGenreId);
+            .HasPrincipalKey(g => g.Name) //define the unique identifier in the entity to be the foreign key
+            .HasForeignKey(m => m.MainGenreName);
 
         builder
             .OwnsOne(movies => movies.Director)
             .ToTable("Movie_Director");
             //.ComplexProperty(movies => movies.Director);
-
-
+        
+        
             builder
                 .OwnsMany(movies => movies.Actors)
                 .ToTable("Movie_Actors");

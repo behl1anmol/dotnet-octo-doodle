@@ -1,4 +1,3 @@
-using EFcore.API.Data.ValueGenerators;
 using EFcore.API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,5 +21,12 @@ public class GenreMapping : IEntityTypeConfiguration<Genre>
         //only works when adding an entity to the context
         //.HasValueGenerator<CreatedDateGenerator>();
         //generating value on the SQL side by specifying a function
+        
+        //as alternate keys are unique in the table, we can use them to create a unique index
+        //and also as a reference for foreign keys
+        builder.Property(g => g.Name)
+            .HasMaxLength(256)
+            .HasColumnType("varchar");
+        builder.HasAlternateKey(g => g.Name);
     }
 }

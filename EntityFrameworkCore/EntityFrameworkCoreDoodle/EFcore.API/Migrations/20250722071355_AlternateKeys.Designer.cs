@@ -4,6 +4,7 @@ using EFcore.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFcore.API.Migrations
 {
     [DbContext(typeof(MoviesContext))]
-    partial class MoviesContextModelSnapshot : ModelSnapshot
+    [Migration("20250722071355_AlternateKeys")]
+    partial class AlternateKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,46 +24,6 @@ namespace EFcore.API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("EFcore.API.Models.Actor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Actors");
-                });
-
-            modelBuilder.Entity("EFcore.API.Models.ExternalInformation", b =>
-                {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImdbUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RottenTomatoesUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TmdbUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MovieId");
-
-                    b.ToTable("ExternalInformation");
-                });
 
             modelBuilder.Entity("EFcore.API.Models.Genre", b =>
                 {
@@ -125,32 +88,6 @@ namespace EFcore.API.Migrations
                     b.ToTable("Movies", (string)null);
                 });
 
-            modelBuilder.Entity("MovieActor", b =>
-                {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ActorId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MovieId", "ActorId");
-
-                    b.HasIndex("ActorId");
-
-                    b.ToTable("MovieActor");
-                });
-
-            modelBuilder.Entity("EFcore.API.Models.ExternalInformation", b =>
-                {
-                    b.HasOne("EFcore.API.Models.Movie", "Movie")
-                        .WithOne("ExternalInformation")
-                        .HasForeignKey("EFcore.API.Models.ExternalInformation", "MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
-                });
-
             modelBuilder.Entity("EFcore.API.Models.Movie", b =>
                 {
                     b.HasOne("EFcore.API.Models.Genre", "Genre")
@@ -212,31 +149,9 @@ namespace EFcore.API.Migrations
                     b.Navigation("Genre");
                 });
 
-            modelBuilder.Entity("MovieActor", b =>
-                {
-                    b.HasOne("EFcore.API.Models.Actor", null)
-                        .WithMany()
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_MovieActor_Actor");
-
-                    b.HasOne("EFcore.API.Models.Movie", null)
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_MovieActor_Movie");
-                });
-
             modelBuilder.Entity("EFcore.API.Models.Genre", b =>
                 {
                     b.Navigation("Movies");
-                });
-
-            modelBuilder.Entity("EFcore.API.Models.Movie", b =>
-                {
-                    b.Navigation("ExternalInformation");
                 });
 #pragma warning restore 612, 618
         }

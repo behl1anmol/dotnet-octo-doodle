@@ -4,6 +4,7 @@ using EFcore.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFcore.API.Migrations
 {
     [DbContext(typeof(MoviesContext))]
-    partial class MoviesContextModelSnapshot : ModelSnapshot
+    [Migration("20250722131219_ManyToMany")]
+    partial class ManyToMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,7 +128,7 @@ namespace EFcore.API.Migrations
                     b.ToTable("Movies", (string)null);
                 });
 
-            modelBuilder.Entity("MovieActor", b =>
+            modelBuilder.Entity("Movie_Actor", b =>
                 {
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
@@ -137,7 +140,7 @@ namespace EFcore.API.Migrations
 
                     b.HasIndex("ActorId");
 
-                    b.ToTable("MovieActor");
+                    b.ToTable("Movie_Actor");
                 });
 
             modelBuilder.Entity("EFcore.API.Models.ExternalInformation", b =>
@@ -212,7 +215,7 @@ namespace EFcore.API.Migrations
                     b.Navigation("Genre");
                 });
 
-            modelBuilder.Entity("MovieActor", b =>
+            modelBuilder.Entity("Movie_Actor", b =>
                 {
                     b.HasOne("EFcore.API.Models.Actor", null)
                         .WithMany()

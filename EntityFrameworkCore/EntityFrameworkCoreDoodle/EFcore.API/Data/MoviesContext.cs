@@ -8,6 +8,8 @@ public class MoviesContext : DbContext
 {
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<Movie> Movies => Set<Movie>();
+    public DbSet<ExternalInformation> ExternalInformation => Set<ExternalInformation>();
+    public DbSet<Actor> Actors => Set<Actor>();
 
     public MoviesContext(DbContextOptions<MoviesContext> options) : base(options)
     { }
@@ -16,6 +18,8 @@ public class MoviesContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new MovieMapping());
         modelBuilder.ApplyConfiguration(new GenreMapping());
+        modelBuilder.ApplyConfiguration(new ExternalInformationMapping());
+        modelBuilder.ApplyConfiguration(new ActorMapping());
 
         // modelBuilder.Entity<Movie>() //entity builder
         //     .ToTable("Pictures")
