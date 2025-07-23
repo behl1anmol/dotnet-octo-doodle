@@ -10,6 +10,7 @@ public class MoviesContext : DbContext
     public DbSet<Movie> Movies => Set<Movie>();
     public DbSet<ExternalInformation> ExternalInformation => Set<ExternalInformation>();
     public DbSet<Actor> Actors => Set<Actor>();
+    //public DbSet<GenreName> GenreNames => Set<GenreName>();
 
     public MoviesContext(DbContextOptions<MoviesContext> options) : base(options)
     { }
@@ -36,5 +37,11 @@ public class MoviesContext : DbContext
         // modelBuilder.Entity<Movie>().Property(movie => movie.Synopsis) //property builder
         //     .HasColumnType("varchar(max)")
         //     .HasColumnName("Plot");
+
+        //refer genre controller for more cleaner way of doing the below
+        // modelBuilder.Entity<GenreName>()
+        //     .HasNoKey() //this is a keyleentity so do not change track
+        //     //.ToView() //we can also register a keyless entity for a view in DB 
+        //     .ToSqlQuery($"SELECT Name FROM [dbo].[Genres]");
     }
 }

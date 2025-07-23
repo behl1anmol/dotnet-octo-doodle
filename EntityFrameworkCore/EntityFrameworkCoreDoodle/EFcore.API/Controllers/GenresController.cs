@@ -85,4 +85,41 @@ public class GenresController : Controller
 
         return Ok();
     }
+    
+    [HttpGet("from-query")]
+    [ProducesResponseType(typeof(IEnumerable<Genre>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFromQuery()
+    {
+        var minimumGenreId = 2;
+        //using from sql query also prevents from SQL injection
+        //we can also use linq with fromsql
+        var genres = await _context.Genres
+            .FromSql($"SELECT * FROM [dbo].[Genres] WHERE ID >= {minimumGenreId}")
+            .Where(genre=>genre.Name != "Comedy")
+            .ToListAsync();
+        
+        //the below method FromSqlRaw does not prevent from SQL injection
+        //it treats the query as a string literal
+        var genresRawSQL = await _context.Genres
+            .FromSqlRaw($"SELECT * FROM [dbo].[Genres] WHERE ID >= {minimumGenreId}")
+            .ToListAsync();
+        
+        //the proper way of using fromsqlraw is below
+        //this will protect from SQL injection attack
+        var genresFromRawSQL = await _context.Genres
+            .FromSqlRaw("SELECT * FROM [dbo].[Genres] WHERE ID >= {0}",minimumGenreId)
+            .ToListAsync();
+        return Ok(genres);       
+    }
+    
+    [HttpGet]
+    [ProducesResponseType(typeof(List<GenreName>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetNames()
+    {
+        // a good way to work with keyless entity availavle .net 8 and above
+        var names = await _context.Database
+            .SqlQuery<GenreName>($"SELECT Name FROM [dbo].[Genres]")
+            .ToListAsync();
+        return Ok(names);       
+    }
 }
