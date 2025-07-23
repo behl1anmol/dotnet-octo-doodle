@@ -14,6 +14,9 @@ public class MovieMapping : IEntityTypeConfiguration<EFcore.API.Models.Movie>
             .HasQueryFilter(m=>m.ReleaseDate >= DateTime.Now.AddYears(-20));
 
         builder.HasKey(m => m.Identifier);
+        
+        //defining compound keys for an alternate key
+        builder.HasAlternateKey(movie => new { movie.Title, movie.ReleaseDate });
 
         builder.Property(movie => movie.Title)
             .HasColumnType("varchar")
