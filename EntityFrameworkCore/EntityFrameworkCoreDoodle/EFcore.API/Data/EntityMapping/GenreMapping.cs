@@ -27,6 +27,12 @@ public class GenreMapping : IEntityTypeConfiguration<Genre>
         builder.Property(g => g.Name)
             .HasMaxLength(256)
             .HasColumnType("varchar");
-        builder.HasAlternateKey(g => g.Name);
+        
+        //shadow property
+        builder.Property<bool>("Deleted")
+            .HasDefaultValue(false);
+        
+        builder.HasQueryFilter(g=> EF.Property<bool>(g,"Deleted") == false)
+            .HasAlternateKey(g => g.Name);
     }
 }

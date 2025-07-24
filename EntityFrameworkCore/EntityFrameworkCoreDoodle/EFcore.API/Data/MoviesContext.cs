@@ -1,4 +1,5 @@
 using EFcore.API.Data.EntityMapping;
+using EFcore.API.Data.Interceptors;
 using EFcore.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,5 +44,10 @@ public class MoviesContext : DbContext
         //     .HasNoKey() //this is a keyleentity so do not change track
         //     //.ToView() //we can also register a keyless entity for a view in DB 
         //     .ToSqlQuery($"SELECT Name FROM [dbo].[Genres]");
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.AddInterceptors(new SaveChangesInterceptor());
     }
 }
