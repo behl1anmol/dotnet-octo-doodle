@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MoviesContext>(optionsBuilder =>
 {
     var connectionString = builder.Configuration.GetConnectionString("MoviesContext");
-    optionsBuilder.UseSqlServer(connectionString);
+    optionsBuilder.UseSqlServer(connectionString, sqlBuilder=>sqlBuilder.MaxBatchSize(50));
         //.UseLoggerFactory() for using ILogger for logging extensions
         //.EnableSensitiveDataLogging() // for logging SQL data and parameters
         //.LogTo(Console.WriteLine); //for logging to console

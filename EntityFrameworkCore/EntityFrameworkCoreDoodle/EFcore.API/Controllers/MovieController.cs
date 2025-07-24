@@ -2,6 +2,7 @@ using EFcore.API.Data;
 using EFcore.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace EFcore.API.Controllers;
 
@@ -20,7 +21,9 @@ public class MoviesController : Controller
     [ProducesResponseType(typeof(List<Movie>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _context.Movies.ToListAsync());
+        return Ok(await _context.Movies
+            .AsNoTracking()
+            .ToListAsync());
     }
 
     [HttpGet("{id:int}")]
@@ -111,15 +114,22 @@ public class MoviesController : Controller
         return Ok(filteredTitles);       
     } 
     
+    private static readonly Func<MoviesContext,AgeRating,IEnumerable<MovieTitle>> CompiledQuery = EF.CompileQuery(
+        (MoviesContext context, AgeRating rating) => 
+            context.Movies
+                .Where(m => m.AgeRating <= rating)
+                .Select(m => new MovieTitle {Id = m.Identifier, Title = m.Title}));
+    
     [HttpGet("until-age{ageRating}")]
     [ProducesResponseType(typeof(List<MovieTitle>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllUntilAge([FromRoute] AgeRating ageRating)
     {
-        //lambda syntax
-        var filteredTitles = await _context.Movies
-            .Where(m => m.AgeRating <= ageRating)
-            .Select(m => new MovieTitle {Id = m.Identifier, Title = m.Title})
-            .ToListAsync();
+        // var filteredTitles = await _context.Movies
+        //     .Where(m => m.AgeRating <= ageRating)
+        //     .Select(m => new MovieTitle {Id = m.Identifier, Title = m.Title})
+        //     .ToListAsync();
+        
+        var filteredTitles = CompiledQuery(_context, ageRating).ToList();
 
         return Ok(filteredTitles);       
     } 

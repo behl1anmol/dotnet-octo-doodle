@@ -13,10 +13,15 @@ public class MovieMapping : IEntityTypeConfiguration<EFcore.API.Models.Movie>
         builder.ToTable("Movies")
             .HasQueryFilter(m=>m.ReleaseDate >= DateTime.Now.AddYears(-20));
 
-        builder.HasKey(m => m.Identifier);
+        builder.HasKey(m => m.Identifier)
+            .IsClustered(false);
         
         //defining compound keys for an alternate key
-        builder.HasAlternateKey(movie => new { movie.Title, movie.ReleaseDate });
+        builder.HasAlternateKey(movie => new { movie.Title, movie.ReleaseDate })
+            .IsClustered(true);
+
+        builder.HasIndex(movie => movie.AgeRating)
+            .IsDescending();
 
         builder.Property(movie => movie.Title)
             .HasColumnType("varchar")

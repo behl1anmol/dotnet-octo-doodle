@@ -23,6 +23,17 @@ public class GenresController : Controller
         return Ok(await _context.Genres.ToListAsync());
     }
 
+    [HttpGet("by-ids")]
+    [ProducesResponseType(typeof(List<Genre>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllByIds([FromQuery] List<int> ids)
+    {
+        if (ids == null || !ids.Any())
+            return BadRequest("No genre IDs provided.");
+
+        var genres = await _context.Genres.Where(g => ids.Contains(g.Id)).ToListAsync();
+        return Ok(genres);
+    }
+
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(Genre), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -122,4 +133,35 @@ public class GenresController : Controller
             .ToListAsync();
         return Ok(names);       
     }
+    
+    [HttpPut("batch-update")]
+    [ProducesResponseType(typeof(IEnumerable<Genre>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UpdateAll([FromBody] IEnumerable<Genre>? genres)
+    {
+        if (genres is null || !genres.Any())
+        {
+            return BadRequest("No genres provided for update.");
+        }
+
+        var updatedGenres = new List<Genre>();
+        
+        //once we have fetched everything from the database, any sunsequent 
+        //find will result in hitting the EF cache
+        var existingGenres = this.GetAllByIds(genres.Select(g => g.Id).ToList());
+        
+        foreach (var genre in genres)
+        {
+            var existingGenre = await _context.Genres.FindAsync(genre.Id);
+            if (existingGenre != null)
+            {
+                existingGenre.Name = genre.Name;
+                updatedGenres.Add(existingGenre);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        
+        return Ok(updatedGenres);
+    }
+    
 }
