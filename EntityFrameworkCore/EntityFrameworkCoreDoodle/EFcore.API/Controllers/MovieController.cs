@@ -21,9 +21,20 @@ public class MoviesController : Controller
     [ProducesResponseType(typeof(List<Movie>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _context.Movies
+        var movies = await _context.Movies
+            //.Include(m => m.Actors) //eager loading actors
             .AsNoTracking()
-            .ToListAsync());
+            .ToListAsync();
+        
+        //explicit loading with Actors
+        foreach (var m in movies.Where(mv => mv.ImdbRating > 4))
+        {
+            await _context.Entry(m)
+                .Collection(mv => mv.Actors)
+                .LoadAsync();
+        }
+        
+        return Ok(movies);
     }
 
     [HttpGet("{id:int}")]
