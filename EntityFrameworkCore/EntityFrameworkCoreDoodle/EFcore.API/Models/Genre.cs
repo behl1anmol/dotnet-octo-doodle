@@ -18,4 +18,12 @@ public class Genre
         get;
         set;
     } = new  HashSet<Movie>();
+
+    // This property is used for optimistic concurrency checking
+    [JsonIgnore]
+    public byte[] ConcurrencyToken
+    {
+        get;
+        set;
+    } = new byte[0];
 }

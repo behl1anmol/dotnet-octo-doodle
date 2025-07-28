@@ -13,12 +13,14 @@ public class MovieMapping : IEntityTypeConfiguration<EFcore.API.Models.Movie>
         builder.ToTable("Movies")
             .HasQueryFilter(m=>m.ReleaseDate >= DateTime.Now.AddYears(-20));
 
-        builder.HasKey(m => m.Identifier)
-            .IsClustered(false);
+        builder.HasKey(m => m.Identifier);
+            //.IsClustered(false); had to remove this as migrations were not working properly
+            // because this is a foreign key for movie_actors table
         
         //defining compound keys for an alternate key
-        builder.HasAlternateKey(movie => new { movie.Title, movie.ReleaseDate })
-            .IsClustered(true);
+        builder.HasAlternateKey(movie => new { movie.Title, movie.ReleaseDate }).IsClustered(false);
+            //.IsClustered(true); had to change this to false to make migrations work properly
+            //as we can have only one clustered index which is identifier
 
         builder.HasIndex(movie => movie.AgeRating)
             .IsDescending();

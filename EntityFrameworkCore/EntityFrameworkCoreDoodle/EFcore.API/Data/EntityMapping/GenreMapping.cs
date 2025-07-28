@@ -28,6 +28,13 @@ public class GenreMapping : IEntityTypeConfiguration<Genre>
             .HasMaxLength(256)
             .HasColumnType("varchar");
         
+        
+        //Concurrency token
+        //this is used for optimistic concurrency checking
+        //it is used to check if the entity has been modified by another user before saving changes
+        builder.Property(g => g.ConcurrencyToken)
+            .IsRowVersion();
+        
         //shadow property
         builder.Property<bool>("Deleted")
             .HasDefaultValue(false);
