@@ -9,12 +9,11 @@ var context = new AdventureWorksContext();
 var query = context.Customers.Where(c=>c.FirstName.StartsWith("C"))
     .Select(c => new
     {
-        c.FirstName,
-        c.LastName,
+        c.FullName,
         c.SalesOrderHeaders.Count
     });
 
 foreach (var item in query)
 {
-    Console.WriteLine($"Customer: {item.FirstName} {item.LastName}, Orders: {item.Count}");
+    Console.WriteLine($"Customer: {item.FullName} Orders: {item.Count}");
 }    
