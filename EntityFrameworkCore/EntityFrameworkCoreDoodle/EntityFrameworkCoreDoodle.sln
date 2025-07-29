@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseScripts", "Database
 		EFcore.API\efbundle = EFcore.API\efbundle
 		DotnetCountersPerformanceMonitoring.txt = DotnetCountersPerformanceMonitoring.txt
 		DBContextDBFirstCommand.txt = DBContextDBFirstCommand.txt
+		..\setup-adventureworks-sqlserver.sh = ..\setup-adventureworks-sqlserver.sh
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.DatabaseFirst", "EFCore.DatabaseFirst\EFCore.DatabaseFirst.csproj", "{FFF0DE4C-42AD-4153-8364-760040B96CB7}"
