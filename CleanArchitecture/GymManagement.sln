@@ -10,6 +10,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Contracts", "GymManagement.Contracts\GymManagement.Contracts.csproj", "{9700D456-412F-417E-B5E2-D78317EEFC88}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Requests", "Requests", "{FF7E0287-F91B-9293-4B04-0777FC500DE8}"
+	ProjectSection(SolutionItems) = preProject
+		Requests\CreateSubscription.http = Requests\CreateSubscription.http
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +41,8 @@ Global
 		{9700D456-412F-417E-B5E2-D78317EEFC88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9700D456-412F-417E-B5E2-D78317EEFC88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9700D456-412F-417E-B5E2-D78317EEFC88}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
