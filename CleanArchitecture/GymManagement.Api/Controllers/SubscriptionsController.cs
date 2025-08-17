@@ -6,9 +6,9 @@ namespace GymManagement.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SubscriptionsController(ISubscriptionsService subscriptionsService) : ControllerBase
+public class SubscriptionsController(ISubscriptionsWriteService subscriptionsService) : ControllerBase
 {
-    private readonly ISubscriptionsService _subscriptionsService = subscriptionsService;
+    private readonly ISubscriptionsWriteService _subscriptionsService = subscriptionsService;
 
     [HttpPost]
     public IActionResult CreateSubscription([FromBody] CreateSubscriptionsRequest request)

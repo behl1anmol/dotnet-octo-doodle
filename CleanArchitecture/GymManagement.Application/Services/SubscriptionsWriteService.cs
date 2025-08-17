@@ -1,6 +1,6 @@
 namespace GymManagement.Application.Services;
 
-public class SubscriptionsService :ISubscriptionsService
+public class SubscriptionsWriteService :ISubscriptionsWriteService
 {
     public Guid CreateSubscription(string subscriptionType, Guid adminId)
     {
