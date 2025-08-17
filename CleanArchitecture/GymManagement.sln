@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Api", "GymManagement.Api\GymManagement.Api.csproj", "{EB24FB57-4485-48DF-800D-DCEBA3EA2450}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Application", "GymManagement.Application\GymManagement.Application.csproj", "{9894A459-7C50-48FD-B67E-B3DDCA946EFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Domain", "GymManagement.Domain\GymManagement.Domain.csproj", "{ECFC497E-37F6-4927-9773-61FFCCEDBC24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Infrastructure", "GymManagement.Infrastructure\GymManagement.Infrastructure.csproj", "{926E846C-D58E-4496-B611-14A450E86DA0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB24FB57-4485-48DF-800D-DCEBA3EA2450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB24FB57-4485-48DF-800D-DCEBA3EA2450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB24FB57-4485-48DF-800D-DCEBA3EA2450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB24FB57-4485-48DF-800D-DCEBA3EA2450}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9894A459-7C50-48FD-B67E-B3DDCA946EFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9894A459-7C50-48FD-B67E-B3DDCA946EFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9894A459-7C50-48FD-B67E-B3DDCA946EFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9894A459-7C50-48FD-B67E-B3DDCA946EFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECFC497E-37F6-4927-9773-61FFCCEDBC24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECFC497E-37F6-4927-9773-61FFCCEDBC24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECFC497E-37F6-4927-9773-61FFCCEDBC24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECFC497E-37F6-4927-9773-61FFCCEDBC24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{926E846C-D58E-4496-B611-14A450E86DA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{926E846C-D58E-4496-B611-14A450E86DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{926E846C-D58E-4496-B611-14A450E86DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{926E846C-D58E-4496-B611-14A450E86DA0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
