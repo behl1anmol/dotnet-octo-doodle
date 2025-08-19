@@ -20,7 +20,7 @@ public class SubscriptionsController(ISender mediator) : ControllerBase
 
         // Handle the result  
         return createSubscriptionResult.MatchFirst(
-            subscriptionId => CreatedAtAction(nameof(CreateSubscription), new CreateSubscriptionResponse(subscriptionId, request.SubscriptionType)),
+            subscription => CreatedAtAction(nameof(CreateSubscription), new CreateSubscriptionResponse(subscription.Id, request.SubscriptionType)),
             errors => Problem()
         );
     }
