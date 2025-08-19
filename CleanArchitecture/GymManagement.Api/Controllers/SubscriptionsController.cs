@@ -16,8 +16,12 @@ public class SubscriptionsController(ISender mediator) : ControllerBase
     {
         var command = new CreateSubscriptionCommand(request.SubscriptionType.ToString(), request.AdminId);
 
-        var subscriptionId = await _mediator.Send(command);
-        var response = new CreateSubscriptionResponse(subscriptionId, request.SubscriptionType);
-        return CreatedAtAction(nameof(CreateSubscription), response);
+        var createSubscriptionResult = await _mediator.Send(command);
+
+        // Handle the result  
+        return createSubscriptionResult.MatchFirst(
+            subscriptionId => CreatedAtAction(nameof(CreateSubscription), new CreateSubscriptionResponse(subscriptionId, request.SubscriptionType)),
+            errors => Problem()
+        );
     }
 }
