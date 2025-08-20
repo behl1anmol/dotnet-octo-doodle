@@ -13,6 +13,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Requests", "Requests", "{FF7E0287-F91B-9293-4B04-0777FC500DE8}"
 	ProjectSection(SolutionItems) = preProject
 		Requests\CreateSubscription.http = Requests\CreateSubscription.http
+		Requests\GetSubscription.http = Requests\GetSubscription.http
 	EndProjectSection
 EndProject
 Global

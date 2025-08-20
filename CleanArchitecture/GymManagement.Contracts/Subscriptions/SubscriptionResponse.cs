@@ -1,6 +1,6 @@
 namespace GymManagement.Contracts.Subscriptions;
 
-public record CreateSubscriptionResponse (
+public record SubscriptionResponse (
     Guid Id,
     SubscriptionType SubscriptionType
 );
